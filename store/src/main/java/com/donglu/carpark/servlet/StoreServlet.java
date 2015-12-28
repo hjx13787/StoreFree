@@ -14,9 +14,35 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class StoreServlet extends HttpServlet {
+import com.donglu.carpark.CarparkServerConfig;
+import com.donglu.carpark.FileUtils;
 
+public class StoreServlet extends HttpServlet {
 	
+	private static final String SERVER_CONFIG = "serverConfig";
+	CarparkServerConfig cfg;
+	
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		try {
+			cfg=(CarparkServerConfig) FileUtils.readObject(SERVER_CONFIG);
+			if (cfg==null) {
+				String upload = FileuploadSend.upload("http://localhost:8899/server/", null);
+				String[] s = upload.split("/");
+				cfg = CarparkServerConfig.getInstance();
+				cfg.setDbServerIp(s[0]);
+				cfg.setDbServerPort(s[1]);
+				cfg.setDbServerUsername(s[2]);
+				cfg.setDbServerPassword(s[3]);
+				cfg = CarparkServerConfig.getInstance();
+				FileUtils.writeObject(SERVER_CONFIG, cfg);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+		
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
 		String method = req.getParameter("method");
@@ -201,6 +227,8 @@ public class StoreServlet extends HttpServlet {
 			String plateNo = map.get("plateNo")==null?null:map.get("plateNo")[0];
 			String hour = map.get("freehours")==null?null:map.get("freehours")[0];
 			String money=map.get("freeMoney")==null?null:map.get("freeMoney")[0];
+			String freeType = map.get("freeType") == null ? null : map.get("freeType")[0];
+			freeType=fomatterStr("freeType", freeType);
 			if(id==null||id.equals("")){
 				id="";
 			}else{
@@ -218,7 +246,7 @@ public class StoreServlet extends HttpServlet {
 				money="&freeMoney="+money;
 			}
 			plateNo=fomatterStr("plateNo", plateNo);
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=add"+id+"&storeName="+storeName+""+plateNo+""+hour+""+money;
+			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=add"+id+"&storeName="+storeName+""+plateNo+""+hour+""+money+freeType;
 			String upload = FileuploadSend.upload(actionUrl,null );
 			write(resp, upload);
 		} catch (Exception e) {

@@ -30,7 +30,7 @@ import java.util.Base64;
 
 public class FileuploadSend {
 
-	public static final Integer TIMEOUT = 2000;
+	public static final Integer TIMEOUT = 20000;
 	public static final Integer SUCCESS = 200;
 
 	public static String upload(String actionUrl, String FileName) throws IOException {

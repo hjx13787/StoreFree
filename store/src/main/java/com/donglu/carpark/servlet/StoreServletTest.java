@@ -1,22 +1,21 @@
 package com.donglu.carpark.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
-import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class StoreServletTest extends HttpServlet {
+import com.donglu.carpark.CarparkServerConfig;
 
-	
+public class StoreServletTest extends HttpServlet {
+	private static final String SERVER_CONFIG = "serverConfig";
+	CarparkServerConfig cfg;
+
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
 		String method = req.getParameter("method");
@@ -150,5 +149,5 @@ public class StoreServletTest extends HttpServlet {
 
 		doGet(request, response);
 	}
-
+	
 }

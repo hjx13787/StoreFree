@@ -51,6 +51,7 @@
 						'plateNo' : result.freePlateNo,
 						'freeMoney' : result.freeMoney,
 						'freehours' : result.freeHour,
+						'freeType':result.freeType,
 					});
 					if (result.photo) {
 						$('#photo').attr('src', sy.contextPath + result.photo);
@@ -83,6 +84,13 @@
 				<tr>
 					<th>优惠时间(小时)</th>
 					<td><input name="freehours" value="" /></td>
+				</tr>
+				<tr>
+					<th>优惠类型</th>
+					<td><select class="easyui-combobox" name="freeType" data-options="panelHeight:'auto',editable:false" style="width: 155px;" >
+							<option value="false" >优惠</option>
+							<option value="true">全免</option>
+					</select></td>
 				</tr>
 			</table>
 		</fieldset>

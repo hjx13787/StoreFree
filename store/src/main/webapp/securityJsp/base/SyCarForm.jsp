@@ -44,7 +44,8 @@
 				id : $(':input[name="id"]').val()
 			}, function(result) {
 				$('form').form('load', {
-					'plateNo' : result.plateNo,
+					'plateNo' : result.freePlateNo,
+					'freeType': result.freeType,
 				});
 				parent.$.messager.progress('close');
 			}, 'json');
@@ -72,6 +73,13 @@
 				<tr>
 					<th>优惠时间(小时)</th>
 					<td><input name="freehours" value="" /></td>
+				</tr>
+				<tr>
+					<th>优惠类型</th>
+					<td><select class="easyui-combobox" name="freeType" data-options="panelHeight:'auto',editable:false" style="width: 155px;">
+							<option value="false">优惠</option>
+							<option value="true">全免</option>
+					</select></td>
 				</tr>
 			</table>
 		</fieldset>

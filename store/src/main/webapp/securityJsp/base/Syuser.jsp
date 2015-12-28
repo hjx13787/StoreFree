@@ -89,6 +89,11 @@
 				field : 'freeHour',
 				sortable : false
 			}, {
+				width : '100',
+				title : '免费类型',
+				field : 'freeType',
+				sortable : false
+			},{
 				width : '150',
 				title : '创建时间',
 				field : 'createTime',
