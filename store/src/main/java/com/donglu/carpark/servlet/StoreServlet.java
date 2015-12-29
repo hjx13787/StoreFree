@@ -29,6 +29,7 @@ public class StoreServlet extends HttpServlet {
 			cfg=(CarparkServerConfig) FileUtils.readObject(SERVER_CONFIG);
 			if (cfg==null) {
 				String upload = FileuploadSend.upload("http://localhost:8899/server/", null);
+				System.out.println(upload);
 				String[] s = upload.split("/");
 				cfg = CarparkServerConfig.getInstance();
 				cfg.setDbServerIp(s[0]);

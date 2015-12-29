@@ -43,7 +43,7 @@
 			sortOrder : 'desc',
 			pageSize : 50,
 			pageList : [ 10, 20, 30, 40, 50, 100, 200, 300, 400, 500 ],
-			frozenColumns : [ [ {
+			columns : [ [ {
 				width : '100',
 				title : '车牌号码',
 				field : 'plateNo',
