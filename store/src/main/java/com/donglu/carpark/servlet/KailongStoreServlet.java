@@ -17,11 +17,16 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.donglu.carpark.CarparkServerConfig;
 import com.donglu.carpark.FileUtils;
-
-public class StoreServlet extends HttpServlet {
+/**
+ * 固定指向凯龙酒店服务器的servlet
+ * @author Michael
+ *
+ */
+public class KailongStoreServlet extends HttpServlet {
 	
 	private static final String SERVER_CONFIG = "serverConfig";
 	CarparkServerConfig cfg;
+	private String serverName="kljdtcc.6655.la";
 	
 	@Override
 	public void init() throws ServletException {
@@ -82,7 +87,8 @@ public class StoreServlet extends HttpServlet {
 		try {
 			String id = req.getParameter("id");
 			id = fomatterStr("id", id);
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=getInOutById" + id;
+//			serverName = req.getServerName();
+			String actionUrl = "http://" + serverName + ":8899/store/?method=getInOutById" + id;
 			String upload = FileuploadSend.upload(actionUrl, null);
 			write(resp, upload);
 		} catch (Exception e) {
@@ -98,7 +104,8 @@ public class StoreServlet extends HttpServlet {
 			plateNO=fomatterStr("searchPlateNO", plateNO);
 			page=fomatterStr("page", page);
 			rows=fomatterStr("rows", rows);
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=searchCarIn"+plateNO+""+page+""+rows+"";
+//			String serverName = req.getServerName();
+			String actionUrl = "http://" + serverName + ":8899/store/?method=searchCarIn"+plateNO+""+page+""+rows+"";
 			String upload = FileuploadSend.upload(actionUrl,null );
 			write(resp, upload);
 		} catch (Exception e) {
@@ -111,7 +118,8 @@ public class StoreServlet extends HttpServlet {
 		String id = req.getParameter("id");
 		String storeName = req.getParameter("storeName");
 		try {
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=getFreeById&id="+id+"&storeName="+storeName;
+//			String serverName = req.getServerName();
+			String actionUrl = "http://" + serverName + ":8899/store/?method=getFreeById&id="+id+"&storeName="+storeName;
 			String upload = FileuploadSend.upload(actionUrl,null );
 			write(resp, upload);
 		} catch (IOException e) {
@@ -143,7 +151,7 @@ public class StoreServlet extends HttpServlet {
 				end="&searchEndTime="+end;
 			}
 			
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=searchPay&storeName="+storeName+""+operaName
+			String actionUrl = "http://" + serverName + ":8899/store/?method=searchPay&storeName="+storeName+""+operaName
 					+""+start+
 					""+end+"&page="+map.get("page")[0]+"&rows="+map.get("rows")[0];
 			String upload = FileuploadSend.upload(actionUrl,null );
@@ -204,7 +212,7 @@ public class StoreServlet extends HttpServlet {
 			}
 			
 			
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=searchFree&storeName="+storeName+""+plateNO
+			String actionUrl = "http://" + serverName + ":8899/store/?method=searchFree&storeName="+storeName+""+plateNO
 					+""+used+""+start+""+end+"&page="+map.get("page")[0]+"&rows="+map.get("rows")[0];
 			String upload = FileuploadSend.upload(actionUrl,null );
 			write(resp, upload);
@@ -248,7 +256,7 @@ public class StoreServlet extends HttpServlet {
 				money="&freeMoney="+money;
 			}
 			plateNo=fomatterStr("plateNo", plateNo);
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=add"+id+"&storeName="+storeName+""+plateNo+""+hour+""+money+freeType;
+			String actionUrl = "http://" + serverName + ":8899/store/?method=add"+id+"&storeName="+storeName+""+plateNo+""+hour+""+money+freeType;
 			String upload = FileuploadSend.upload(actionUrl,null );
 			write(resp, upload);
 		} catch (Exception e) {
@@ -259,7 +267,7 @@ public class StoreServlet extends HttpServlet {
 	private void tree(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			
-			String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=tree";
+			String actionUrl = "http://" + serverName + ":8899/store/?method=tree";
 			String upload = FileuploadSend.upload(actionUrl,null );
 			write(resp, upload);
 		} catch (IOException e) {
@@ -270,7 +278,7 @@ public class StoreServlet extends HttpServlet {
 	private void login(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String name = req.getParameter("data.loginname");
 		String pwd = req.getParameter("data.pwd");
-		String actionUrl = "http://" + req.getServerName() + ":8899/store/?method=login&data.loginname="+name+"&data.pwd="+pwd;
+		String actionUrl = "http://" + serverName + ":8899/store/?method=login&data.loginname="+name+"&data.pwd="+pwd;
 		String upload = FileuploadSend.upload(actionUrl,null );
 		
 		write(resp, upload);
