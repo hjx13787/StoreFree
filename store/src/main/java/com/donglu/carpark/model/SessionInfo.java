@@ -16,6 +16,19 @@ public class SessionInfo implements java.io.Serializable {
 	private String storeName;
 	private String userName;
 	
+	
+	
+	public SessionInfo() {
+	}
+
+	public SessionInfo(String loginName, String loginPassword, String storeName, String userName) {
+		super();
+		this.loginName = loginName;
+		this.loginPassword = loginPassword;
+		this.storeName = storeName;
+		this.userName = userName;
+	}
+
 	public String getLoginName() {
 		return loginName;
 	}

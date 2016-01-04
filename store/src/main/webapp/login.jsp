@@ -18,8 +18,7 @@
 				$('#loginBtn').linkbutton('disable');
 				$.post('<%=contextPath%>/StoreServlet?method=login', $form.serialize(), function(result) {
 					if (result.success) {
-						window.location.href=sy.contextPath + '/loginsuccess.jsp?userName='+result.obj.userName+
-								'&storeName='+result.obj.storeName+'&loginName='+result.obj.loginName
+						window.location.href=sy.contextPath + '/securityJsp/main.jsp'
 					} else {
 						$.messager.alert('提示', result.msg, 'error', function() {
 							$('#loginBtn').linkbutton('enable');

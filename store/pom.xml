@@ -41,6 +41,12 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- 加入fastjson依赖包 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.1.37</version>
+		</dependency>
 
 		<!-- io包 -->
 		<dependency>

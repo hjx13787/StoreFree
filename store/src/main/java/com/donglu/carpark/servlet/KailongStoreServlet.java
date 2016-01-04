@@ -1,22 +1,22 @@
 package com.donglu.carpark.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.alibaba.fastjson.JSONObject;
 import com.donglu.carpark.CarparkServerConfig;
 import com.donglu.carpark.FileUtils;
+import com.donglu.carpark.model.SessionInfo;
 /**
  * 固定指向凯龙酒店服务器的servlet
  * @author Michael
@@ -176,6 +176,7 @@ public class KailongStoreServlet extends HttpServlet {
 		try {
 			Map<String, String[]> map = req.getParameterMap();
 			String[] storeNames = map.get("storeName");
+			Object attribute = req.getSession().getAttribute("sessionInfo");
 			String[] plateNOs = map.get("searchPlateNO");
 			String[] useds = map.get("searchUsed");
 			String[] startTimes = map.get("searchStartTime");
@@ -280,6 +281,16 @@ public class KailongStoreServlet extends HttpServlet {
 		String pwd = req.getParameter("data.pwd");
 		String actionUrl = "http://" + serverName + ":8899/store/?method=login&data.loginname="+name+"&data.pwd="+pwd;
 		String upload = FileuploadSend.upload(actionUrl,null );
+		JSONObject object=JSONObject.parseObject(upload);
+		
+		String success=object.getString("success");
+		String storeName=object.getJSONObject("obj").getString("storeName");
+		String userName=object.getJSONObject("obj").getString("userName");
+		
+		if(success != null && success.equalsIgnoreCase("true")){
+			SessionInfo sessionInfo = new SessionInfo(name,pwd,storeName,userName);
+			req.getSession().setAttribute("sessionInfo", sessionInfo);
+		}
 		
 		write(resp, upload);
 	}
