@@ -1,22 +1,18 @@
 package com.donglu.carpark.servlet;
 
+import com.donglu.carpark.CarparkServerConfig;
+import com.donglu.carpark.FileUtils;
+import com.donglu.carpark.StrUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.binary.Base64;
-
-import com.donglu.carpark.CarparkServerConfig;
-import com.donglu.carpark.FileUtils;
 
 public class StoreServlet extends HttpServlet {
 	
@@ -214,7 +210,7 @@ public class StoreServlet extends HttpServlet {
 	}
 
 	private String encoder(String end) throws UnsupportedEncodingException {
-		return Base64.encodeBase64String(end.getBytes("utf-8"));
+		return StrUtils.encodeBase64String(end.getBytes("utf-8"));
 	}
 
 	private void edit(HttpServletRequest req, HttpServletResponse resp) {

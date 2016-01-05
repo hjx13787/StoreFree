@@ -11,6 +11,8 @@
   <properties>
 		<!-- 指明使用JDK7 -->
 		<java-version>1.7</java-version>
+		<slf4j-version>1.7.12</slf4j-version>
+		<logback-version>1.1.2</logback-version>
 		<!-- 指明使用utf-8编码 -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -54,18 +56,31 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-		<!-- 加入POI核心依赖 -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.10-beta2</version>
-		</dependency>
-		<!-- 为POI支持Office Open XML -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.10-beta2</version>
-		</dependency>
+
+	  <!--log 日志-->
+	  <dependency>
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-api</artifactId>
+		  <version>${slf4j-version}</version>
+	  </dependency>
+
+	  <dependency>
+		  <groupId>ch.qos.logback</groupId>
+		  <artifactId>logback-core</artifactId>
+		  <version>${logback-version}</version>
+	  </dependency>
+
+	  <dependency>
+		  <groupId>ch.qos.logback</groupId>
+		  <artifactId>logback-classic</artifactId>
+		  <version>${logback-version}</version>
+	  </dependency>
+
+	  <dependency>
+		  <groupId>com.google.guava</groupId>
+		  <artifactId>guava</artifactId>
+		  <version>18.0</version>
+	  </dependency>
   </dependencies>
   <build>
   		<plugins>

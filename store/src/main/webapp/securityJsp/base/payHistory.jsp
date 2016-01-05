@@ -3,7 +3,6 @@
 <%
 	String contextPath = request.getContextPath();
 	String serverName=request.getServerName();
-	SessionInfo info=(SessionInfo)request.getSession().getAttribute("sessionInfo");
 %>
 <!DOCTYPE html>
 <html>
@@ -16,7 +15,7 @@
 		grid = $('#grid').datagrid({
 			title : '',
 			/* sy.contextPath + '/base/syuser!grid.sy' */
-			url : '<%=contextPath%>/StoreServlet?method=searchPay&storeName=<%=info.getStoreName()%>',
+			url : '<%=contextPath%>/StoreServlet?method=searchPay',
 			striped : true,
 			rownumbers : true,
 			pagination : true,

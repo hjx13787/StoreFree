@@ -3,7 +3,6 @@
 <%
 	String contextPath = request.getContextPath();
 	String serverName=request.getServerName();
-	SessionInfo info=(SessionInfo)request.getSession().getAttribute("sessionInfo");
 %>
 <%	
 	String id = request.getParameter("id");
@@ -20,7 +19,7 @@
 	var submitNow = function($dialog, $grid, $pjq) {
 		var url;
 			/* sy.contextPath + '/base/syuser!save.sy' */
-		url = '<%=contextPath%>/StoreServlet?method=add&storeName=<%=info.getStoreName()%>';
+		url = '<%=contextPath%>/StoreServlet?method=add';
 		$.post(url, sy.serializeObject($('form')), function(result) {
 			parent.sy.progressBar('close');//关闭上传进度条
 

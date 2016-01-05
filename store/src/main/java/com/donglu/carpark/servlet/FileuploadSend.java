@@ -1,28 +1,10 @@
 package com.donglu.carpark.servlet;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import
+import com.donglu.carpark.StrUtils;
 
-java.io.DataOutputStream;
-import
-
-java.io.FileInputStream;
-import
-
-java.io.IOException;
-import
-
-java.io.InputStream;
-import java.io.InputStreamReader;
-import
-
-java.net.HttpURLConnection;
-import
-
-java.net.URL;
-
-import org.apache.commons.codec.binary.Base64;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class FileuploadSend {
 
@@ -53,7 +35,7 @@ public class FileuploadSend {
 			sb1.append(PREFFIX);
 			sb1.append(BOUNDARY);
 			sb1.append(LINEND);
-			String encodeToString = Base64.encodeBase64String(FileName.getBytes("UTF-8"));
+			String encodeToString = StrUtils.encodeBase64String(FileName.getBytes("UTF-8"));
 			sb1.append("Content-Disposition: form-data; name=\"file\";filename=\"" + encodeToString + "\"" + LINEND);
 			sb1.append("Content-Type: application/octet-stream;chartset=" + CHARSET + LINEND);
 			sb1.append(LINEND);
@@ -97,7 +79,7 @@ public class FileuploadSend {
 	}
 
 	public static byte[] download(String actionUrl, String FileName) throws IOException {
-		URL uri = new URL(actionUrl + "?id=" + Base64.encodeBase64String(FileName.getBytes("UTF-8")));
+		URL uri = new URL(actionUrl + "?id=" + StrUtils.encodeBase64String(FileName.getBytes("UTF-8")));
 		HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
 		conn.setReadTimeout(TIMEOUT);
 		conn.setRequestMethod("GET");

@@ -1,59 +1,39 @@
 package com.donglu.carpark.servlet;
 
+import com.alibaba.fastjson.JSONObject;
+import com.donglu.carpark.SessionCache;
+import com.donglu.carpark.StrUtils;
+import com.donglu.carpark.model.SessionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.binary.Base64;
-
-import com.alibaba.fastjson.JSONObject;
-import com.donglu.carpark.CarparkServerConfig;
-import com.donglu.carpark.FileUtils;
-import com.donglu.carpark.model.SessionInfo;
 /**
  * 固定指向凯龙酒店服务器的servlet
  * @author Michael
  *
  */
 public class KailongStoreServlet extends HttpServlet {
-	
-	private static final String SERVER_CONFIG = "serverConfig";
-	CarparkServerConfig cfg;
+
+	final static Logger LOGGER = LoggerFactory.getLogger(KailongStoreServlet.class);
+
 	private String serverName="kljdtcc.6655.la";
-	
-	@Override
-	public void init() throws ServletException {
-		super.init();
-		try {
-			cfg=(CarparkServerConfig) FileUtils.readObject(SERVER_CONFIG);
-			if (cfg==null) {
-				String upload = FileuploadSend.upload("http://localhost:8899/server/", null);
-				System.out.println(upload);
-				String[] s = upload.split("/");
-				cfg = CarparkServerConfig.getInstance();
-				cfg.setDbServerIp(s[0]);
-				cfg.setDbServerPort(s[1]);
-				cfg.setDbServerUsername(s[2]);
-				cfg.setDbServerPassword(s[3]);
-				cfg = CarparkServerConfig.getInstance();
-				FileUtils.writeObject(SERVER_CONFIG, cfg);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-		
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
+		req.getSession().setMaxInactiveInterval(999999);
 		String method = req.getParameter("method");
-		System.out.println("method========"+method);
+		LOGGER.debug("dispatcher method:{}",method);
+
 		if (method==null) {
 			return;
 		}
@@ -79,7 +59,8 @@ public class KailongStoreServlet extends HttpServlet {
 		}else if(method.equals("getInOutById")){
 			getInOutById(req, resp);
 		}
-		
+
+		req.getSession().setAttribute("sessionInfo",SessionCache.get(req));
 //		logger.error("没有找到方法为{}的方法",method);
 	}
 	
@@ -116,7 +97,7 @@ public class KailongStoreServlet extends HttpServlet {
 	
 	private void getFreeById(HttpServletRequest req, HttpServletResponse resp) {
 		String id = req.getParameter("id");
-		String storeName = req.getParameter("storeName");
+		String storeName = SessionCache.get(req).getStoreName();
 		try {
 //			String serverName = req.getServerName();
 			String actionUrl = "http://" + serverName + ":8899/store/?method=getFreeById&id="+id+"&storeName="+storeName;
@@ -130,7 +111,7 @@ public class KailongStoreServlet extends HttpServlet {
 	private void searchPay(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			Map<String, String[]> map = req.getParameterMap();
-			String storeName = map.get("storeName")==null?null:map.get("storeName")[0];
+			String storeName = SessionCache.get(req).getStoreName();
 			String[] operaNames = map.get("searchOperaName");
 			String[] startTimes = map.get("searchStartTime");
 			String[] endTimes = map.get("searchEndTime");
@@ -175,8 +156,6 @@ public class KailongStoreServlet extends HttpServlet {
 	private void searchFree(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			Map<String, String[]> map = req.getParameterMap();
-			String[] storeNames = map.get("storeName");
-			Object attribute = req.getSession().getAttribute("sessionInfo");
 			String[] plateNOs = map.get("searchPlateNO");
 			String[] useds = map.get("searchUsed");
 			String[] startTimes = map.get("searchStartTime");
@@ -185,7 +164,7 @@ public class KailongStoreServlet extends HttpServlet {
 			String end = endTimes==null?null:endTimes[0];
 			String plateNO = plateNOs==null?null:plateNOs[0];
 			String used = useds==null?null:useds[0];
-			String storeName=storeNames==null?null:storeNames[0];
+			String storeName = SessionCache.get(req).getStoreName();
 			if(plateNO==null||plateNO.equals("")){
 				plateNO="";
 			}else{
@@ -223,7 +202,7 @@ public class KailongStoreServlet extends HttpServlet {
 	}
 
 	private String encoder(String end) throws UnsupportedEncodingException {
-		return Base64.encodeBase64String(end.getBytes("utf-8"));
+		return StrUtils.encodeBase64String(end.getBytes("utf-8"));
 	}
 
 	private void edit(HttpServletRequest req, HttpServletResponse resp) {
@@ -233,7 +212,7 @@ public class KailongStoreServlet extends HttpServlet {
 	private void add(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			Map<String, String[]> map = req.getParameterMap();
-			String storeName=map.get("storeName")==null?null:map.get("storeName")[0];
+			String storeName= SessionCache.get(req).getStoreName();
 			String id=map.get("id")==null?null:map.get("id")[0];
 			String plateNo = map.get("plateNo")==null?null:map.get("plateNo")[0];
 			String hour = map.get("freehours")==null?null:map.get("freehours")[0];
@@ -289,7 +268,9 @@ public class KailongStoreServlet extends HttpServlet {
 		
 		if(success != null && success.equalsIgnoreCase("true")){
 			SessionInfo sessionInfo = new SessionInfo(name,pwd,storeName,userName);
-			req.getSession().setAttribute("sessionInfo", sessionInfo);
+			SessionCache.put(req.getSession().getId(),sessionInfo);
+
+			resp.addCookie(new Cookie("sessionId",req.getSession().getId()));
 		}
 		
 		write(resp, upload);

@@ -3,8 +3,6 @@
 <%
 	String contextPath = request.getContextPath();
 	String serverName=request.getServerName();
-	SessionInfo info=(SessionInfo)request.getSession().getAttribute("sessionInfo");
-	
 %>
 <%	
 	String id = request.getParameter("id");
@@ -21,7 +19,7 @@
 	var submitNow = function($dialog, $grid, $pjq) {
 		var url;
 			/* sy.contextPath + '/base/syuser!save.sy' */
-		url = '<%=contextPath%>/StoreServlet?method=add&path=<%=contextPath%>&storeName=<%=info.getStoreName()%>';
+		url = '<%=contextPath%>/StoreServlet?method=add&path=<%=contextPath%>';
 		$.post(url, sy.serializeObject($('form')), function(result) {
 			parent.sy.progressBar('close');//关闭上传进度条
 
@@ -42,7 +40,7 @@
 			parent.$.messager.progress({
 				text : '数据加载中....'
 			});
-			$.post('<%=contextPath%>/StoreServlet?method=getFreeById&storeName=<%=info.getStoreName()%>', {
+			$.post('<%=contextPath%>/StoreServlet?method=getFreeById', {
 				id : $(':input[name="id"]').val()
 			}, function(result) {
 				if (result.id != undefined) {
