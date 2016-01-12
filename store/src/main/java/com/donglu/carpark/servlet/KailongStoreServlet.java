@@ -1,17 +1,22 @@
 package com.donglu.carpark.servlet;
 
 import com.alibaba.fastjson.JSONObject;
+import com.donglu.carpark.FileUtils;
 import com.donglu.carpark.SessionCache;
 import com.donglu.carpark.StrUtils;
 import com.donglu.carpark.model.SessionInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -25,9 +30,22 @@ import java.util.Map;
  */
 public class KailongStoreServlet extends HttpServlet {
 
+	private static final String SERVER_NAME = "serverName";
+
 	final static Logger LOGGER = LoggerFactory.getLogger(KailongStoreServlet.class);
 
-	private String serverName="kljdtcc.6655.la";
+	private String serverName="127.0.0.1";
+
+	
+	public KailongStoreServlet() {
+		String s = (String) FileUtils.readObject(SERVER_NAME);
+		if (s!=null&&!s.isEmpty()) {
+			serverName=s;
+			System.out.println("serverName========="+s);
+		}
+	}
+
+
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.getSession().setMaxInactiveInterval(999999);
@@ -58,12 +76,31 @@ public class KailongStoreServlet extends HttpServlet {
 			searchCarIn(req, resp);
 		}else if(method.equals("getInOutById")){
 			getInOutById(req, resp);
+		}else if(method.equals("updateIp")){
+			updateIp(req, resp);
 		}
 
 		req.getSession().setAttribute("sessionInfo",SessionCache.get(req));
 //		logger.error("没有找到方法为{}的方法",method);
 	}
 	
+	private void updateIp(HttpServletRequest req, HttpServletResponse resp) {
+		try {
+			String parameter = req.getParameter("updateIp");
+			if (parameter!=null&&!parameter.isEmpty()) {
+				String ip = StrUtils.decoderBase64String(parameter);
+				if (ip!=null) {
+					serverName=ip;
+					FileUtils.writeObject(SERVER_NAME, serverName);
+				}
+			}
+			System.out.println("serverName========"+serverName);
+			write(resp, "true");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void getInOutById(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			String id = req.getParameter("id");
@@ -263,13 +300,12 @@ public class KailongStoreServlet extends HttpServlet {
 		JSONObject object=JSONObject.parseObject(upload);
 		
 		String success=object.getString("success");
-		String storeName=object.getJSONObject("obj").getString("storeName");
-		String userName=object.getJSONObject("obj").getString("userName");
-		
 		if(success != null && success.equalsIgnoreCase("true")){
+			String storeName=object.getJSONObject("obj").getString("storeName");
+			String userName=object.getJSONObject("obj").getString("userName");
+			
 			SessionInfo sessionInfo = new SessionInfo(name,pwd,storeName,userName);
 			SessionCache.put(req.getSession().getId(),sessionInfo);
-
 			resp.addCookie(new Cookie("sessionId",req.getSession().getId()));
 		}
 		
