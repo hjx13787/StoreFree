@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.donglu.carpark.model.SessionInfo"%>
+<%@ page import="com.donglu.carpark.model.storemodel.SessionInfo"%>
 <%
 	String contextPath = request.getContextPath();
 	String serverName=request.getServerName();

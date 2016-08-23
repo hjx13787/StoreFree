@@ -1,20 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="storeWebApp" version="2.5">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="storeWebApp" version="2.5">
 	<display-name>STORE</display-name>
 	<description>store</description>
-  <servlet>
-    <description>This is the description of my J2EE component</description>
-    <display-name>This is the display name of my J2EE component</display-name>
-    <servlet-name>StoreServlet</servlet-name>
-    <servlet-class>com.donglu.carpark.servlet.KailongStoreServlet</servlet-class>
-  </servlet>
+	<servlet>
+		<description>This is the description of my J2EE component</description>
+		<display-name>This is the display name of my J2EE component</display-name>
+		<servlet-name>StoreServlet</servlet-name>
+		<servlet-class>com.donglu.carpark.servlet.TestHessianServlet</servlet-class>
+	</servlet>
 
-  <servlet-mapping>
-    <servlet-name>StoreServlet</servlet-name>
-    <url-pattern>/StoreServlet</url-pattern>
-  </servlet-mapping>
 
-	
+	<servlet-mapping>
+		<servlet-name>StoreServlet</servlet-name>
+		<url-pattern>/StoreServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+         <!-- 配置 HessianServlet，Servlet的名字随便配置，例如这里配置成ServiceServlet-->
+         <servlet-name>StoreHessianServlet</servlet-name>
+         <servlet-class>com.donglu.carpark.servlet.StoreHessianServlet</servlet-class>
+         
+         <init-param>
+			<!--提供给客户端调用的接口，这里的home-api配置不是必须的，可以不配置 -->
+			<!--home-api也可以写为api-class -->
+			<param-name>api-class</param-name>
+			<!-- 客户端接口 -->
+			<param-value>com.donglu.carpark.service.StoreHessianServiceI</param-value>
+		</init-param>
+     </servlet>
+     <!-- 映射 HessianServlet的访问URL地址-->
+     <servlet-mapping>
+         <servlet-name>StoreHessianServlet</servlet-name>
+         <url-pattern>/StoreHessianServlet</url-pattern>
+     </servlet-mapping>
+
+
+
+<!-- 	<filter>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping> -->
+
 
 
 	<!-- 配置session超时时间，单位分钟 -->

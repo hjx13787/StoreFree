@@ -1,24 +1,27 @@
 package com.donglu.carpark.servlet;
 
 import com.alibaba.fastjson.JSONObject;
-import com.donglu.carpark.FileUtils;
 import com.donglu.carpark.SessionCache;
-import com.donglu.carpark.StrUtils;
+import com.donglu.carpark.model.storemodel.FreeInfo;
+import com.donglu.carpark.model.storemodel.Info;
+import com.donglu.carpark.model.storemodel.LoginInfo;
+import com.donglu.carpark.model.storemodel.SearchCarInInfo;
+import com.donglu.carpark.model.storemodel.SearchFreeInfo;
+import com.donglu.carpark.model.storemodel.SearchPayInfo;
 import com.donglu.carpark.model.storemodel.SessionInfo;
+import com.donglu.carpark.model.storemodel.TreeInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -28,23 +31,14 @@ import java.util.Map;
  * @author Michael
  *
  */
-public class KailongStoreServlet extends HttpServlet {
+public class TestHessianServlet extends HttpServlet {
 
-	private static final String SERVER_NAME = "serverName";
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3659485366918503478L;
 	final static Logger LOGGER = LoggerFactory.getLogger(KailongStoreServlet.class);
-
-	private String serverName="127.0.0.1";
-
-	
-	public KailongStoreServlet() {
-		String s = (String) FileUtils.readObject(SERVER_NAME);
-		if (s!=null&&!s.isEmpty()) {
-			serverName=s;
-			System.out.println("serverName========="+s);
-		}
-	}
-
+	SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -61,6 +55,8 @@ public class KailongStoreServlet extends HttpServlet {
 			login(req,resp);
 		}else if (method.equals("add")) {
 			add(req,resp);
+		}else if (method.equals("getFreeById")) {
+			getFreeById(req,resp);
 		}
 		else if (method.equals("edit")) {
 			edit(req,resp);
@@ -70,44 +66,22 @@ public class KailongStoreServlet extends HttpServlet {
 		}
 		else if (method.equals("searchPay")) {
 			searchPay(req,resp);
-		}else if (method.equals("getFreeById")) {
-			getFreeById(req,resp);
 		}else if(method.equals("searchCarIn")){
 			searchCarIn(req, resp);
 		}else if(method.equals("getInOutById")){
 			getInOutById(req, resp);
-		}else if(method.equals("updateIp")){
-			updateIp(req, resp);
 		}
-
-		req.getSession().setAttribute("sessionInfo",SessionCache.get(req));
-//		logger.error("没有找到方法为{}的方法",method);
 	}
 	
-	private void updateIp(HttpServletRequest req, HttpServletResponse resp) {
-		try {
-			String parameter = req.getParameter("updateIp");
-			if (parameter!=null&&!parameter.isEmpty()) {
-				String ip = StrUtils.decoderBase64String(parameter);
-				if (ip!=null) {
-					serverName=ip;
-					FileUtils.writeObject(SERVER_NAME, serverName);
-				}
-			}
-			System.out.println("serverName========"+serverName);
-			write(resp, "true");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private void getInOutById(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			String id = req.getParameter("id");
-			id = fomatterStr("id", id);
-//			serverName = req.getServerName();
-			String actionUrl = "http://" + serverName + ":8899/store/?method=getInOutById" + id;
-			String upload = FileuploadSend.upload(actionUrl, null);
+			FreeInfo info=new FreeInfo();
+			info.setId(Long.valueOf(id));
+			info.setLoginName(SessionCache.get(req).getLoginName());
+			info.setUseType(4);
+			String upload = sendInfo(info).getMsg();
 			write(resp, upload);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -119,12 +93,12 @@ public class KailongStoreServlet extends HttpServlet {
 			String plateNO = req.getParameter("searchPlateNO");
 			String page = req.getParameter("page");
 			String rows = req.getParameter("rows");
-			plateNO=fomatterStr("searchPlateNO", plateNO);
-			page=fomatterStr("page", page);
-			rows=fomatterStr("rows", rows);
-//			String serverName = req.getServerName();
-			String actionUrl = "http://" + serverName + ":8899/store/?method=searchCarIn"+plateNO+""+page+""+rows+"";
-			String upload = FileuploadSend.upload(actionUrl,null );
+			SearchCarInInfo info=new SearchCarInInfo();
+			info.setLoginName(SessionCache.get(req).getLoginName());
+			info.setPlateNO(plateNO);
+			info.setPage(Integer.valueOf(page));
+			info.setRows(Integer.valueOf(rows));
+			String upload = sendInfo(info).getMsg();
 			write(resp, upload);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -135,10 +109,13 @@ public class KailongStoreServlet extends HttpServlet {
 	private void getFreeById(HttpServletRequest req, HttpServletResponse resp) {
 		String id = req.getParameter("id");
 		String storeName = SessionCache.get(req).getStoreName();
+		FreeInfo info=new FreeInfo();
+		info.setStoreName(storeName);
+		info.setId(Long.valueOf(id));
+		info.setLoginName(SessionCache.get(req).getLoginName());
+		info.setUseType(3);
 		try {
-//			String serverName = req.getServerName();
-			String actionUrl = "http://" + serverName + ":8899/store/?method=getFreeById&id="+id+"&storeName="+storeName;
-			String upload = FileuploadSend.upload(actionUrl,null );
+			String upload = sendInfo(info).getMsg();
 			write(resp, upload);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -155,24 +132,25 @@ public class KailongStoreServlet extends HttpServlet {
 			String operaName=operaNames==null?null:operaNames[0];
 			String start = startTimes==null?null:startTimes[0];
 			String end = endTimes==null?null:endTimes[0];
-			operaName=fomatterStr("searchOperaName",operaName);
-			if(start==null||start.equals("")){
-				start="";
-			}else{
-				start=encoder(start);
-				start="&searchStartTime="+start;
+			SearchPayInfo info=new SearchPayInfo();
+			info.setOperaName(operaName);
+			info.setStoreName(storeName);
+			info.setLoginName(SessionCache.get(req).getLoginName());
+			try {
+				info.setStart(df.parse(start));
+			} catch (Exception e) {
+				
 			}
-			if(end==null||end.equals("")){
-				end="";
-			}else{
-				end=encoder(end);
-				end="&searchEndTime="+end;
+			try {
+				info.setEnd(df.parse(end));
+			} catch (Exception e) {
+				
 			}
-			
-			String actionUrl = "http://" + serverName + ":8899/store/?method=searchPay&storeName="+storeName+""+operaName
-					+""+start+
-					""+end+"&page="+map.get("page")[0]+"&rows="+map.get("rows")[0];
-			String upload = FileuploadSend.upload(actionUrl,null );
+			String page = map.get("page")[0];
+			String rows = map.get("rows")[0];
+			info.setPage(Integer.valueOf(page));
+			info.setRows(Integer.valueOf(rows));
+			String upload = sendInfo(info).getMsg();
 			write(resp, upload);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -180,15 +158,6 @@ public class KailongStoreServlet extends HttpServlet {
 		
 	}
 
-	private String fomatterStr(String name, String value) throws UnsupportedEncodingException {
-		if(value==null||value.equals("")){
-			value="";
-		}else{
-			value=encoder(value);
-			value="&"+name+"="+value;
-		}
-		return value;
-	}
 
 	private void searchFree(HttpServletRequest req, HttpServletResponse resp) {
 		try {
@@ -202,45 +171,49 @@ public class KailongStoreServlet extends HttpServlet {
 			String plateNO = plateNOs==null?null:plateNOs[0];
 			String used = useds==null?null:useds[0];
 			String storeName = SessionCache.get(req).getStoreName();
+			SearchFreeInfo info=new SearchFreeInfo();
+			info.setStoreName(storeName);
+			info.setLoginName(SessionCache.get(req).getLoginName());
 			if(plateNO==null||plateNO.equals("")){
 				plateNO="";
 			}else{
-				
-				plateNO="&searchPlateNO="+plateNO;
+				info.setPlateNO(plateNO);
 			}
 			if(used==null||used.equals("")){
 				used="";
 			}else{
-				used=encoder(used);
-				used="&searchUsed="+used;
+				info.setUsed(used);
 			}
 			
 			if(start==null||start.equals("")){
 				start="";
 			}else{
-				start=encoder(start);
-				start="&searchStartTime="+start;
+				try {
+					info.setStart(df.parse(start));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 			}
 			if(end==null||end.equals("")){
 				end="";
 			}else{
-				end=encoder(end);
-				end="&searchEndTime="+end;
+				try {
+					info.setEnd(df.parse(end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 			}
-			
-			
-			String actionUrl = "http://" + serverName + ":8899/store/?method=searchFree&storeName="+storeName+""+plateNO
-					+""+used+""+start+""+end+"&page="+map.get("page")[0]+"&rows="+map.get("rows")[0];
-			String upload = FileuploadSend.upload(actionUrl,null );
+			String page = map.get("page")[0];
+			String rows = map.get("rows")[0];
+			info.setPage(Integer.valueOf(page));
+			info.setRows(Integer.valueOf(rows));
+			String upload = sendInfo(info).getMsg();
 			write(resp, upload);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private String encoder(String end) throws UnsupportedEncodingException {
-		return StrUtils.encodeBase64String(end.getBytes("utf-8"));
-	}
 
 	private void edit(HttpServletRequest req, HttpServletResponse resp) {
 		
@@ -255,26 +228,28 @@ public class KailongStoreServlet extends HttpServlet {
 			String hour = map.get("freehours")==null?null:map.get("freehours")[0];
 			String money=map.get("freeMoney")==null?null:map.get("freeMoney")[0];
 			String freeType = map.get("freeType") == null ? null : map.get("freeType")[0];
-			freeType=fomatterStr("freeType", freeType);
+			FreeInfo info=new FreeInfo();
+			info.setPlateNo(plateNo);
+			info.setLoginName(SessionCache.get(req).getLoginName());
+			info.setStoreName(storeName);
+			info.setUseType(1);
+			info.setFreeType(freeType);
 			if(id==null||id.equals("")){
-				id="";
 			}else{
-				id="&id="+id;
+				info.setId(Long.valueOf(id));
 			}
 			if(hour==null||hour.equals("")){
 				hour="";
 			}else{
-				hour="&freehours="+hour;
+				info.setHour(Float.valueOf(hour));
 			}
 			
 			if(money==null||money.equals("")){
 				money="";
 			}else{
-				money="&freeMoney="+money;
+				info.setMoney(Float.valueOf(money));
 			}
-			plateNo=fomatterStr("plateNo", plateNo);
-			String actionUrl = "http://" + serverName + ":8899/store/?method=add"+id+"&storeName="+storeName+""+plateNo+""+hour+""+money+freeType;
-			String upload = FileuploadSend.upload(actionUrl,null );
+			String upload = sendInfo(info).getMsg();
 			write(resp, upload);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -283,32 +258,42 @@ public class KailongStoreServlet extends HttpServlet {
 
 	private void tree(HttpServletRequest req, HttpServletResponse resp) {
 		try {
-			
-			String actionUrl = "http://" + serverName + ":8899/store/?method=tree";
-			String upload = FileuploadSend.upload(actionUrl,null );
+			SessionInfo sessionInfo = SessionCache.get(req);
+			String loginName = sessionInfo.getLoginName();
+			TreeInfo info=new TreeInfo();
+			info.setLoginName(loginName);
+			String upload = sendInfo(info).getMsg();
 			write(resp, upload);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+
+	private Info sendInfo(Info info) {
+		return StoreHessianServlet.setInfo(info);
+	}
+
 	private void login(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String name = req.getParameter("data.loginname");
 		String pwd = req.getParameter("data.pwd");
-		String actionUrl = "http://" + serverName + ":8899/store/?method=login&data.loginname="+name+"&data.pwd="+pwd;
-		String upload = FileuploadSend.upload(actionUrl,null );
+		LoginInfo info=new LoginInfo();
+		info.setLoginName(name);;
+		info.setName(name);
+		info.setPwd(pwd);
+		
+		String upload = sendInfo(info).getMsg();
 		JSONObject object=JSONObject.parseObject(upload);
 		
 		String success=object.getString("success");
 		if(success != null && success.equalsIgnoreCase("true")){
 			String storeName=object.getJSONObject("obj").getString("storeName");
 			String userName=object.getJSONObject("obj").getString("userName");
-			
 			SessionInfo sessionInfo = new SessionInfo(name,pwd,storeName,userName);
 			SessionCache.put(req.getSession().getId(),sessionInfo);
 			resp.addCookie(new Cookie("sessionId",req.getSession().getId()));
+			req.getSession().setAttribute("sessionInfo", sessionInfo);
 		}
-		
 		write(resp, upload);
 	}
 

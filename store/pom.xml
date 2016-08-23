@@ -24,6 +24,13 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+    	<groupId>com.caucho</groupId>
+  		<artifactId>hessian</artifactId>
+  		<version>4.0.33</version>
+    </dependency>
+    
     <!-- 加入jstl依赖包 -->
 		<dependency>
 			<groupId>jstl</groupId>
@@ -36,13 +43,11 @@
 			<version>2.2.1-b03</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- servlet -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.3.1.v20150714</version>
+        </dependency>
 		<!-- 加入fastjson依赖包 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -55,6 +60,12 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
+		</dependency>
+		<!-- 伪静态 -->
+		<dependency>
+		    <groupId>org.tuckey</groupId>
+		    <artifactId>urlrewritefilter</artifactId>
+		    <version>4.0.3</version>
 		</dependency>
 
 	  <!--log 日志-->
@@ -81,6 +92,7 @@
 		  <artifactId>guava</artifactId>
 		  <version>18.0</version>
 	  </dependency>
+	  
   </dependencies>
   <build>
   		<plugins>

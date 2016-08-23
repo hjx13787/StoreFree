@@ -1,4 +1,4 @@
-package com.donglu.carpark.model;
+package com.donglu.carpark.model.storemodel;
 
 /**
  * sessionInfo模型，只要登录成功，就需要设置到session里面，便于系统使用

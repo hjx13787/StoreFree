@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <!DOCTYPE urlrewrite SYSTEM "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd" PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"> -->
+<urlrewrite>
+	<rule>   
+		<from>/index.html</from> 
+	   <to type="forward">/index.jsp</to>   
+	</rule>
+</urlrewrite>

@@ -1,13 +1,15 @@
 package com.donglu.carpark;
 
-import com.donglu.carpark.model.SessionInfo;
+import com.donglu.carpark.model.storemodel.SessionInfo;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.concurrent.TimeUnit;
 
 /**
